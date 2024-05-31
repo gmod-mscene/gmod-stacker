@@ -91,10 +91,8 @@ local mode = TOOL.Mode -- defined by the name of this file (default should be st
 --------------------------------------------------------------------------]]--
 
 -- needed for localization support (depends on GMod locale: "gmod_language")
-include( "improvedstacker/localify.lua" )
-localify.LoadSharedFile( "improvedstacker/localization.lua" ) -- loads the file containing localized phrases
-local L = localify.Localize                                   -- used for translating string tokens into localized phrases
-local prefix = "#tool."..mode.."."                            -- prefix used for this tool's localization tokens
+local L = DLib.I18n.Localize                                   -- used for translating string tokens into localized phrases
+local prefix = "gui.tool.stacker."                            -- prefix used for this tool's localization tokens
 
 -- needed for various stacker functionality
 include( "improvedstacker/improvedstacker.lua" )
@@ -128,7 +126,6 @@ local tobool = tobool
 local CurTime = CurTime
 local surface = surface
 local IsValid = IsValid
-local localify = localify
 local language = language
 local tonumber = tonumber
 local GetConVar = GetConVar
@@ -329,19 +326,19 @@ elseif ( SERVER ) then
 		if ( IsValid( ply ) and result ~= true ) then
 			-- if the server blocked the change, send the player an error
 			if ( result == false )                     then
-				ply:PrintMessage( HUD_PRINTTALK, L(prefix.."error_blocked_by_server", localify.GetLocale( ply )) .. (isstring(reason) and ": " .. reason or "") )
+				ply:PrintMessage( HUD_PRINTTALK, L(prefix.."error_blocked_by_server") .. (isstring(reason) and ": " .. reason or "") )
 				return false
 			end
 			-- if the server didn't give a response, fallback to a ply:IsAdmin() check
 			if ( result == nil and not ply:IsAdmin() ) then
-				ply:PrintMessage( HUD_PRINTTALK, L(prefix.."error_not_admin", localify.GetLocale( ply )) .. ": " .. cmd )
+				ply:PrintMessage( HUD_PRINTTALK, L(prefix.."error_not_admin") .. ": " .. cmd )
 				return false
 			end
 		end
 		
 		-- lastly, ensure the argument is a valid number before returning true
 		if ( not tonumber( arg ) ) then
-			ply:PrintMessage( HUD_PRINTTALK, L(prefix.."error_invalid_argument", localify.GetLocale( ply )) )
+			ply:PrintMessage( HUD_PRINTTALK, L(prefix.."error_invalid_argument") )
 			return false
 		end
 		
@@ -620,7 +617,7 @@ function TOOL:LeftClick( tr, isRightClick )
 
 	-- check if the player's stack size is higher than the server's max allowed size (but only if the server didn't explictly override it)
 	if ( maxCount >= 0 ) then
-		if ( count > maxCount ) then self:SendError( L(prefix.."error_max_per_stack", localify.GetLocale( self:GetOwner() )) .. maxCount ) end
+		if ( count > maxCount ) then self:SendError( L(prefix.."error_max_per_stack") .. maxCount ) end
 		count = math.Clamp( count, 0, maxCount )
 	end
 	
@@ -633,7 +630,7 @@ function TOOL:LeftClick( tr, isRightClick )
 	local delay = hook.Run( "StackerDelay", ply, lastStackTime ) or self:GetDelay()
 	
 	-- check if the player is trying to use stacker too quickly
-	if ( lastStackTime + delay > CurTime() ) then self:SendError( L(prefix.."error_too_quick", localify.GetLocale( self:GetOwner() )) ) return false end
+	if ( lastStackTime + delay > CurTime() ) then self:SendError( L(prefix.."error_too_quick") ) return false end
 	improvedstacker.SetLastStackTime( ply, CurTime() )
 	
 	local stackDirection = self:GetDirection()
@@ -681,7 +678,7 @@ function TOOL:LeftClick( tr, isRightClick )
 		
 		-- check if the player has too many active stacker props spawned out already
 		local stackerEntsSpawned = self:GetNumberPlayerEnts()
-		if ( maxPerPlayer >= 0 and stackerEntsSpawned >= maxPerPlayer ) then self:SendError( ("%s (%s)"):format(L(prefix.."error_max_per_player", localify.GetLocale( self:GetOwner() )), maxPerPlayer) ) break end
+		if ( maxPerPlayer >= 0 and stackerEntsSpawned >= maxPerPlayer ) then self:SendError( ("%s (%s)"):format(L(prefix.."error_max_per_player"), maxPerPlayer) ) break end
 		-- check if the player has exceeded the sbox_maxprops cvar
 		if ( not self:GetSWEP():CheckLimit( "props" ) )            then break end
 		-- check if external admin mods are blocking this entity
@@ -701,7 +698,7 @@ function TOOL:LeftClick( tr, isRightClick )
 		
 		
 		-- check if the stacked props would be spawned outside of the world
-		if ( stayInWorld and not util.IsInWorld( entPos ) ) then self:SendError( L(prefix.."error_not_in_world", localify.GetLocale( self:GetOwner() )) ) break end
+		if ( stayInWorld and not util.IsInWorld( entPos ) ) then self:SendError( L(prefix.."error_not_in_world") ) break end
 		
 		-- create the new stacked entity
 		newEnt = ents.Create( "prop_physics" )
@@ -884,7 +881,7 @@ function TOOL:ApplyWeld( lastEnt, newEnt )
 	
 	if ( not ok ) then
 		print( mode .. ": " .. L(prefix.."error_max_constraints") .." (error: " .. err .. ")" )
-		self:SendError( mode .. ": " .. L(prefix.."error_max_constraints", localify.GetLocale( self:GetOwner() )) )
+		self:SendError( mode .. ": " .. L(prefix.."error_max_constraints") )
 	end
 	
 	return ok
@@ -906,7 +903,7 @@ function TOOL:ApplyNoCollide( lastEnt, newEnt )
 	
 	if ( not ok ) then
 		print( mode .. ": " .. L(prefix.."error_max_constraints") .." (error: " .. err .. ")" )
-		self:SendError( mode .. ": " .. L(prefix.."error_max_constraints", localify.GetLocale( self:GetOwner() )) )
+		self:SendError( mode .. ": " .. L(prefix.."error_max_constraints") )
 	end
 	
 	return ok
@@ -1418,24 +1415,8 @@ if ( CLIENT ) then
 		}
 		
 		local directions = { Label = L(prefix.."label_direction"), MenuButton = "0", Options = directionOptions }
-		
-		-- populate the table of valid languages that clients can switch between
-		local languageOptions = {}
-		
-		for code, tbl in pairs( localify.GetLocalizations() ) do
-			if ( not L(prefix.."language_"..code, code) ) then continue end
-			
-			languageOptions[ L(prefix.."language_"..code, code) ] = { localify_language = code }
-		end
-		
-		local languages = {
-			Label      = L(prefix.."label_language"),
-			MenuButton = 0,
-			Options    = languageOptions,
-		}
-		
-		cpanel:AddControl( "ComboBox", languages )
-		cpanel:ControlHelp( "\n" .. L(prefix.."label_credits") )
+
+		cpanel:ControlHelp( L(prefix.."label_credits") )
 		cpanel:AddControl( "Label",    { Text = L(prefix.."label_presets") } )
 		cpanel:AddControl( "ComboBox", presets )
 		cpanel:AddControl( "Checkbox", { Label = L(prefix.."checkbox_freeze"),    Command = mode.."_freeze" } )
@@ -1478,14 +1459,6 @@ if ( CLIENT ) then
 		cpanel:ClearControls()
 		buildCPanel( cpanel )
 	end )
-
-	-- listen for changes to the localify language and reload the tool's menu to update the localizations
-	cvars.AddChangeCallback( "localify_language", function( name, old, new )
-		local cpanel = controlpanel.Get( mode )
-		if ( not IsValid( cpanel ) ) then return end
-		cpanel:ClearControls()
-		buildCPanel( cpanel )
-	end, "improvedstacker" )
 	
 	TOOL.BuildCPanel = buildCPanel
 

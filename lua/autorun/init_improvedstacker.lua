@@ -7,7 +7,6 @@ if ( SERVER ) then
 	
 	-- convenience modules
 	AddCSLuaFile( "improvedstacker/improvedstacker.lua" )
-	AddCSLuaFile( "improvedstacker/localify.lua" )
 	
 else
 
