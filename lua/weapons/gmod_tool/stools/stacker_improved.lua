@@ -207,20 +207,6 @@ if ( CLIENT ) then
 	TOOL.ClientConVar[ "axis_angles" ]   = "0"
 	TOOL.ClientConVar[ "opacity" ]       = "100"
 	TOOL.ClientConVar[ "use_shift_key" ] = "0"
-
-	--[[--------------------------------------------------------------------------
-	-- Language Settings
-	--------------------------------------------------------------------------]]--
-
-	language.Add( "tool."..mode..".name",         L(prefix.."name") )
-	language.Add( "tool."..mode..".desc",         L(prefix.."desc") )
-	--language.Add( "tool."..mode..".0",            L(prefix.."0") )
-	language.Add( "tool."..mode..".left",         L(prefix.."left") )
-	language.Add( "tool."..mode..".shift_left",   L(prefix.."shift_left") )
-	language.Add( "tool."..mode..".right",        L(prefix.."right") )
-	language.Add( "tool."..mode..".shift_right",  L(prefix.."shift_right") )
-	language.Add( "tool."..mode..".reload",       L(prefix.."reload") )
-	language.Add( "Undone_"..mode,                L("Undone_"..mode) )
 	
 	--[[--------------------------------------------------------------------------
 	-- Net Messages
