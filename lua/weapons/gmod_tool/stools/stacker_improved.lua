@@ -159,7 +159,7 @@ local showSettings = false
 --------------------------------------------------------------------------]]--
 
 TOOL.Category = "Construction"
-TOOL.Name     = L(prefix.."name")
+TOOL.Name     = "gui.tool.stacker.name"
 
 TOOL.Information = {
 	"left",
@@ -1402,7 +1402,6 @@ if ( CLIENT ) then
 		
 		local directions = { Label = L(prefix.."label_direction"), MenuButton = "0", Options = directionOptions }
 
-		cpanel:ControlHelp( L(prefix.."label_credits") )
 		cpanel:AddControl( "Label",    { Text = L(prefix.."label_presets") } )
 		cpanel:AddControl( "ComboBox", presets )
 		cpanel:AddControl( "Checkbox", { Label = L(prefix.."checkbox_freeze"),    Command = mode.."_freeze" } )
