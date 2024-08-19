@@ -159,7 +159,7 @@ local showSettings = false
 --------------------------------------------------------------------------]]--
 
 TOOL.Category = "Construction"
-TOOL.Name     = "gui.tool.stacker.name"
+TOOL.Name     = "Stacker - Improved"
 
 TOOL.Information = {
 	"left",
