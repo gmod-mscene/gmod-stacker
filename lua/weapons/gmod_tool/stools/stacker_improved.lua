@@ -164,17 +164,8 @@ TOOL.Name     = "Stacker - Improved"
 TOOL.Information = {
 	"left",
 	"right",
-	{ 
-		name  = "shift_left",
-		icon2  = "gui/e.png",
-		icon = "gui/lmb.png",
-		
-	},
-	{
-		name  = "shift_right",
-		icon2  = "gui/e.png",
-		icon = "gui/rmb.png",
-	},
+	"left_use",
+	"right_use",
 	"reload",
 }
 
