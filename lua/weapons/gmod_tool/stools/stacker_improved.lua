@@ -91,7 +91,7 @@ local mode = TOOL.Mode -- defined by the name of this file (default should be st
 --------------------------------------------------------------------------]]--
 
 -- needed for localization support (depends on GMod locale: "gmod_language")
-local L = DLib.I18n.Localize                                   -- used for translating string tokens into localized phrases
+local L = DeadDuck.tr.Localize                                   -- used for translating string tokens into localized phrases
 local prefix = "gui.tool.stacker."                            -- prefix used for this tool's localization tokens
 
 -- needed for various stacker functionality
@@ -1289,6 +1289,7 @@ if ( CLIENT ) then
 		
 		local ang = ent:GetAngles()
 		
+		-- print(L("gui.tool.stacker.hud_front"))
 		local front = ("%s%s"):format( cvarAxisLbl:GetBool() and L(prefix.."hud_front").." " or "", cvarAxisAng:GetBool() and "("..ang.x..")" or "" )
 		local right = ("%s%s"):format( cvarAxisLbl:GetBool() and L(prefix.."hud_right").." " or "", cvarAxisAng:GetBool() and "("..ang.y..")" or "" )
 		local upwrd = ("%s%s"):format( cvarAxisLbl:GetBool() and L(prefix.."hud_up").." "    or "", cvarAxisAng:GetBool() and "("..ang.z..")" or "" )
